@@ -2,6 +2,8 @@
 
 import discord
 
+discord.utils.setup_logging()
+
 
 class MyClient(discord.Client):
 
