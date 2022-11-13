@@ -18,14 +18,28 @@ for sec in new_div:
 
     
 
-# class Retrieve:
+class Retrieve:
     
-#     def __init__(self, course_selection:dict = None) :
-#          self.course_selection = course_selection
+    def __init__(self, course_selection:dict = None) :
+         self.course_selection = course_selection
 
-#     def updateFields(self, d:dict):
-#         self.course_selection = d
+    def updateFields(self, d:dict):
+        self.course_selection = d
         
+    def add(self, course, section = None):
+        success = False
+        if (section != None):
+            if (self.course_selection.has_key(course)):
+                self.course_selection[course].extend[section]
+                success = True
+            else:
+                self.course_selection[course] = section
+                success = True
+        return success
+    
+    def delete(course, Section = None):
+        raise Exception
+    
 #To do add testing perferably unit testing, however since small project might be more efficent to do print
     def retrieve(self):
         if (self.course_selection != None):
@@ -44,4 +58,8 @@ for sec in new_div:
                                 print('waitlist ' + sec.find('span', class_="waitlist-count").text)     
                 else:
                     raise BaseException().add_note('Could not retrieve html data for class')
+        else:
+            return False
+            
+                
             
