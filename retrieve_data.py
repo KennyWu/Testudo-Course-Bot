@@ -16,7 +16,7 @@ for sec in new_div:
     #     print('open seats ' + sec.find('span', class_="open-seats-count").text)
     #     print('waitlist ' + sec.find('span', class_="waitlist-count").text)
 
-    
+    #TODO - please add testing holy shit add testing i wrote too much code i dont know if it works lmao
 
 class Retrieve:
     
@@ -36,6 +36,7 @@ class Retrieve:
                 self.course_selection[course] = section
                 success = True
         return success
+    
     
     def delete(course, Section = None):
         raise Exception
