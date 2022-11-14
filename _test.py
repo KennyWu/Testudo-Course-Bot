@@ -10,3 +10,11 @@ def test_two():
     """Test that the retrieve object will hold the correct dictionary values when updated"""
     a = True
     assert a == True
+    
+def test_three():
+    a = True
+    assert a == True
+    
+def test_four():
+    a = True
+    assert a == True
