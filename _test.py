@@ -19,6 +19,3 @@ def test_four():
     a = True
     assert a == True
 
-def test_five():
-    a = True
-    assert a == True
