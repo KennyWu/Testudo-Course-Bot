@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 # # print(response.text)
 # soup = BeautifulSoup(response.content, "lxml")
 # divs = soup.find('div', id='CMSC216')
-# # print(divs)
+# print(divs)
 # new_div = divs.find_all('div', class_='section-info-container')
 # # print(divs.prettify)
 # for sec in new_div:
@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 #     #     print('waitlist ' + sec.find('span', class_="waitlist-count").text)
 
 # TODO - please add testing holy shit add testing i wrote too much code i dont know if it works lmao
+
 
 class Retrieve:
 
@@ -50,33 +51,25 @@ class Retrieve:
                 self._course_selection[course] = self._course_selection[course].union(
                     section)
                 success = True
-            elif self._verify(course):
+            elif self.__verify(course):
                 self._course_selection[course] = section
                 success = True
         return success
 
     # TODO add section verification
     def __verify(self, course: str, section: set = None):
-        response = requests.get("""https://app.testudo.umd.edu/soc/search?courseId={}
-        &sectionId=&termId={}&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=AL
-        L&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&
-        courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&
-        _classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on""",
-                                self._course_selection, self._semester)
-        soup = BeautifulSoup(response, 'lxml')
+        url = f"https://app.testudo.umd.edu/soc/search?courseId={course}&sectionId=&termId={self._semester}&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on"
+        response = requests.get(url)
+        if response.status_code == 400:
+            return False
+        soup = BeautifulSoup(response.content, 'lxml')
         return soup.find('div', id=course) != None
 
     # TODO conduct unit testing, change url
 
     def retrieve(self):
         if (self._course_selection != None):
-            response = requests.get("""https://app.testudo.umd.edu/soc/search?
-            courseId=CMSC216&sectionId=&termId=202301&_openSectionsOnly=on&
-            creditCompare=&credits=&courseLevelFilter=ALL&instructor=&
-            _facetoface=on&_blended=on&_online=on&courseStartCompare=&
-            courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&
-            courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&
-            _classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on""")
+            response = requests.get("https://app.testudo.umd.edu/soc/search?courseId=CMSC216&sectionId=&termId=202301&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on")
             soup = BeautifulSoup(response.content, 'lxml')
             for course_name in self._course_selection.keys():
                 div = soup.find('div', id=course_name)
