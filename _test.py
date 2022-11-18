@@ -48,7 +48,8 @@ def test_five():
     retrieve = Retrieve(semester=202301)
     retrieve.course_selection = test_dict
     assert retrieve.add(course='CS0-1', section={100, 200, 300, 400}) == False
-    
+
+
 def test_six():
     """Tests for invalid sections"""
     test_dict = {'CMSC216': {110, 120, 130, 140},
@@ -56,3 +57,24 @@ def test_six():
     retrieve = Retrieve(semester=202301)
     retrieve.course_selection = test_dict
     assert retrieve.add(course='CMSC216', section={'0000', '0101'}) == False
+
+
+def test_seven():
+    """Tests that deleting works as on deleting whole courses"""
+    test_dict = {'CMSC216': {110, 120, 130, 140},
+                 'CMSC132': {110, 120, 130, 140}}
+    retrieve = Retrieve(semester=202301)
+    retrieve.course_selection = test_dict
+    assert retrieve.delete('CMSC132') == True
+    assert retrieve.course_selection == {'CMSC216': {110, 120, 130, 140}}
+
+
+def test_eight():
+    """Tests deleting specific sections"""
+    test_dict = {'CMSC216': {'101', '102', '103', '104'},
+                 'CMSC132': {'101', '102', '103', '104'}}
+    retrieve = Retrieve(semester=202301)
+    retrieve.course_selection = test_dict
+    assert retrieve.delete('CMSC132', {'101', '102', '200'}) == True
+    assert retrieve.course_selection == {'CMSC216': {'101', '102', '103', '104'},
+                                         'CMSC132': {'103', '104'}}

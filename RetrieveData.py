@@ -20,6 +20,15 @@ from bs4 import BeautifulSoup
 class Retrieve:
 
     def __init__(self, course_selection: dict = None, semester: str = None):
+        """Initializes the retrieve object with a course selection dictionary and
+        semsester to be retrieved
+
+        Args:
+            course_selection (dict, optional): _description_. Defaults to None.
+                Format is CourseName:str : {section1:str, section2:str}
+            semester (str, optional): _description_. Defaults to None.
+                If semester is None and other methods are called Exception will be raised
+        """
         self._course_selection = course_selection
         self._semester = semester
 
@@ -39,12 +48,16 @@ class Retrieve:
     def course_selection(self, d: dict):
         self._course_selection = d
 
-    #TODO - add unit testing for delete
-    def delete(self, course, section: set=None):
+    def delete(self, course: str, section: set = None):
         """Deletes the course or the specific sections of courses
-            - If section is not part of the existing set then nothing happens
-            - Returns True if course if found and deleted
-            - Returns False otherwise
+
+        Args:
+            course (str): courses to be deleted
+            section (set, optional): sections to be deleted, if no set is passed in and only course
+                is passed then, delete entire course from entry 
+        Returns:
+            True: if successfully deleted, or course at least exists within the entries
+            False: If course is never found within the dictionary entry 
         """
         success = False
         if course in self._course_selection:
@@ -52,21 +65,38 @@ class Retrieve:
             if (section != None):
                 for sec in section:
                     if sec in self.course_selection[course]:
-                      self.course_selection[course].remove(sec)  
+                        self.course_selection[course].remove(sec)
             else:
                 self._course_selection.pop(course, None)
-        return success  
-    
+        return success
+
     def __check_semster(self):
+        """Private method for verifying if the semester exists 
+        If semester==None then an exception is raised
+
+        Raises:
+            Exception: Exception raised with descriptiong 'No semester added'
+        """
         if (self._semester == None):
             raise Exception("No semester added")
 
     def add(self, course: str, section: set = None):
+        """Adds course and sections associated with course to dictionary entry
+
+        Args:
+            course (str): course to be added
+            section (set, optional): sections to be added,
+             if section == None, nothing will be added
+
+        Returns:
+            True: if courses and sections are succesfully added
+            False: if courses and sections are not added due to being invalid or other
+        """
         self.__check_semster()
         success = False
         if (section != None):
             if course in self._course_selection:
-                if self.__verify(course, section=section) :
+                if self.__verify(course, section=section):
                     self._course_selection[course] = self._course_selection[course].union(
                         section)
                     success = True
@@ -75,8 +105,17 @@ class Retrieve:
                 success = True
         return success
 
-    # TODO add section verification
     def __verify(self, course: str, section: set):
+        """private method to verify the course and section are actually part of registry
+
+        Args:
+            course (str): course to be verified
+            section (set): sections to be verified 
+
+        Returns:
+            True: If courses and sections are valid
+            False: If courses or sections are invalid
+        """
         url = f"https://app.testudo.umd.edu/soc/search?courseId={course}&sectionId=&termId={self._semester}&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on"
         response = requests.get(url)
         success = False
