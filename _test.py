@@ -3,9 +3,10 @@ from RetrieveData import Retrieve
 
 
 def test_one():
-    """Tests the dictionary values is None with newly initalized Retrieve Object"""
+    """Tests the dictionary values is empty with newly initalized Retrieve Object"""
     retrieve = Retrieve()
-    assert retrieve.course_selection == None
+    print(retrieve.course_selection)
+    assert retrieve.course_selection == {}
 
 
 def test_two():
@@ -78,3 +79,20 @@ def test_eight():
     assert retrieve.delete('CMSC132', {'101', '102', '200'}) == True
     assert retrieve.course_selection == {'CMSC216': {'101', '102', '103', '104'},
                                          'CMSC132': {'103', '104'}}
+
+
+def test_nine():
+    """Not actual inseration test due to variables always changing,
+     just testing retrieve - use py.test _test.py -s
+     """
+    retrieve = Retrieve(semester=202301)
+    assert retrieve.add('CMSC132', {'0101', '0102', '0103'}) == True
+    assert retrieve.add('MATH240', {'0121', '0122', '0131'}) == True
+    data = retrieve.retrieve()
+    for course in data:
+        print("COURSE: " + course)
+        for section in data[course]:
+            print("  - Section " + section)
+            print("    - Time: " + data[course][section][0])
+            print("    - Opening: " + data[course][section][1])
+            print("    - Waitlist: " + data[course][section][2])

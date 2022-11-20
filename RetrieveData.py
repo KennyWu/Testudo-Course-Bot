@@ -16,14 +16,14 @@ from bs4 import BeautifulSoup
 #         print(f'{days} {start_time}-{end_time}')
 #         print('open seats ' + sec.find('span', class_="open-seats-count").text)
 #         print('waitlist ' + sec.find('span', class_="waitlist-count").text)
-    
+
 
 # TODO - please add testing holy shit add testing i wrote too much code i dont know if it works lmao
 
 
 class Retrieve:
 
-    def __init__(self, course_selection: dict = None, semester: str = None):
+    def __init__(self, course_selection: dict = dict(), semester: str = None):
         """Initializes the retrieve object with a course selection dictionary and
         semsester to be retrieved
 
@@ -138,45 +138,32 @@ class Retrieve:
     # TODO conduct unit testing, change url
     def retrieve(self):
         self.__check_semster
-        data = dict(str, dict(str, tuple))
+        data = dict()
         if (self._course_selection != None):
             for course in self._course_selection:
-                data[course] = {}
-                response = requests.get(f'https://app.testudo.umd.edu/soc/search?courseId={course}&sectionId=&termId={self._semester}&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on')
+                data[course] = dict()
+                response = requests.get(
+                    f'https://app.testudo.umd.edu/soc/search?courseId={course}&sectionId=&termId={self._semester}&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on')
                 html_data = BeautifulSoup(response.content, 'lxml')
                 html_data = html_data.find('div', id=f'{course}')
-                html_set = html_data.find_all('div', class_='section delivery-f2f')
+                html_set = html_data.find_all(
+                    'div', class_='section delivery-f2f')
                 for html_course in html_set:
-                    section = html_course.find('span', class_='section-id')
+                    section = html_course.find(
+                        'span', class_='section-id').text
+                    section = section.strip()
                     if section in self._course_selection[course]:
-                        times = html_course.find('span', class_='section-days').text
-                        times += " " + html_course.find('span', class_='class-start-time').text
-                        times += " " + html_course.find('span', class_='class-end-time').text
-                        open_seats = html_course.find('span', class_="open-seats-count").text
-                        waitlist = html_course.find('span', class_="waitlist-count").text
-                        data[course][section] =  (times, open_seats, waitlist)
+                        times = html_course.find(
+                            'span', class_='section-days').text
+                        times += " " + \
+                            html_course.find(
+                                'span', class_='class-start-time').text
+                        times += " " + \
+                            html_course.find(
+                                'span', class_='class-end-time').text
+                        open_seats = html_course.find(
+                            'span', class_="open-seats-count").text
+                        waitlist = html_course.find(
+                            'span', class_="waitlist-count").text
+                        data[course][section] = (times, open_seats, waitlist)
         return data
-                        
-                    
-        # self.__check_semster()
-        # if (self._course_selection != None):
-        #     response = requests.get("https://app.testudo.umd.edu/soc/search?courseId=CMSC216&sectionId=&termId=202301&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on")
-        #     soup = BeautifulSoup(response.content, 'lxml')
-        #     for course_name in self._course_selection.keys():
-        #         div = soup.find('div', id=course_name)
-        #         if (div != None):
-        #             new_div = div.find_all(
-        #                 'div', class_='section-info-container')
-        #             for section in self._course_selection[course_name]:
-        #                 for section_html in new_div:
-        #                     if section in section_html.find('span').text:
-        #                         print('Course' + course_name)
-        #                         print('section' + section)
-        #                         print('open seats ' + sec.find('span',
-        #                               class_="open-seats-count").text)
-        #                         print('waitlist ' + sec.find('span',
-        #                               class_="waitlist-count").text)
-        #         else:
-        #             raise BaseException().add_note('Could not retrieve html data for class')
-        # else:
-        #       return False
