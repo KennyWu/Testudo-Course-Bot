@@ -2,25 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 
 
-# response = requests.get("https://app.testudo.umd.edu/soc/search?courseId=CMSC216&sectionId=&termId=202301&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on")
-# # print(response.status_code)
-# # print(response.text)
-# soup = BeautifulSoup(response.content, "lxml")
-# divs = soup.find('div', id='CMSC216')
-# new_div = divs.find_all('div', class_='section delivery-f2f')
-# for sec in new_div:
-#     if "0101" in sec.find('span', class_='section-id').text:
-#         days = sec.find('span', class_='section-days').text
-#         start_time = sec.find('span', class_='class-start-time').text
-#         end_time = sec.find('span', class_='class-end-time').text
-#         print(f'{days} {start_time}-{end_time}')
-#         print('open seats ' + sec.find('span', class_="open-seats-count").text)
-#         print('waitlist ' + sec.find('span', class_="waitlist-count").text)
-
-
-# TODO - please add testing holy shit add testing i wrote too much code i dont know if it works lmao
-
-
 class Retrieve:
 
     def __init__(self, course_selection: dict = dict(), semester: str = None):
