@@ -118,6 +118,12 @@ class Retrieve:
 
     # TODO conduct unit testing, change url
     def retrieve(self):
+        """
+        Retrieves all data on the courses and returns in dict format
+
+        Returns:
+            dict: format (str: dict(tuple()))
+        """
         self.__check_semster
         data = dict()
         if (self._course_selection != None):
