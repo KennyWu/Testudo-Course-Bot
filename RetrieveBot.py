@@ -1,6 +1,7 @@
 import discord
 from RetrieveData import Retrieve
 from discord.ext import tasks, commands
+import datetime
 
 discord.utils.setup_logging()
 
@@ -13,12 +14,6 @@ bot = commands.Bot(allowed_mentions=discord.AllowedMentions(
 data_retriever = Retrieve(semester=SEMSESTER)
 courses = dict()
 prev_data = dict()
-
-
-@bot.event
-async def on_ready():
-    if not retrieve_important.is_running():
-        retrieve_important.start()
 
 
 @bot.command()
@@ -38,7 +33,7 @@ async def course(ctx, *arg):
     if success:
         retrieve_important.stop()
         await ctx.send("Courses added Sucessfully")
-        update_data(ctx)
+        update_data()
         retrieve_important.start()
     else:
         await ctx.send("Courses weren't added for following possiible reasons:")
@@ -54,12 +49,10 @@ async def delete(ctx, *arg):
     if success:
         retrieve_important.stop()
         await ctx.send('Courses/Sections deleted')
-        update_data(ctx)
+        update_data()
         retrieve_important.start()
     else:
         await ctx.send('Courses/Sections not successfully deleted')
-
-# TODO - finish retrieve and looping method - process info
 
 
 @bot.command()
@@ -77,7 +70,7 @@ async def retrieve(ctx):
                 course_str += '\n\t\tWAITLIST: ' + data[course][section][2]
             await ctx.send(course_str)
     else:
-        await ctx.send('No classes found')
+        await ctx.send('Courses not found')
 
 
 @bot.command()
@@ -99,23 +92,58 @@ async def retrieve_important():
     data = dict()
     data = data_retriever.retrieve()
     channel = bot.get_channel(931422185040531486)
-    await channel.send('@everyone\n')
+    changes = set()
     if len(data) != 0:
         for course in data:
             course_str = '**COURSE: ' + course + '**'
             for section in data[course]:
-                course_str += '\n\tSECTION: ' + section
-                course_str += '\n\t\tTIME: ' + data[course][section][0]
-                course_str += '\n\t\tOPENINGS: ' + data[course][section][1]
-                course_str += '\n\t\tWAITLIST: ' + data[course][section][2]
-            await channel.send(course_str)
+                time = data[course][section][0]
+                openings = int(data[course][section][1])
+                waitlist = int(data[course][section][2])
+                str_changes = compare(
+                    course, section, openings, time, "openings")
+                str_changes += "\n" + \
+                    compare(course, section, openings, time, "openings")
+                if not str_changes:
+                    changes.add(str_changes)
+        if len(changes) != 0:
+            await channel.send('@everyone\n')
+            for change in changes:
+                await channel.send(change + "\n")
+        else:
+            await channel.send("No changes found")
     else:
-        await channel.send('No classes found')
+        await channel.send('No courses found')
+
+#ctx, course, section, to_compare, time, comparison_type
 
 
-async def update_data(ctx):
+def compare(course, section, to_compare, time, comparison_type):
     global prev_data
-    prev_data = ctx.invoke(bot.get_command('retrieve'))
+    orig_val = 0
+    if comparison_type == "waitlist":
+        orig_val = int(prev_data[course][section][1])
+    else:
+        orig_val = int(prev_data[course][section][2])
+    comparison = course + " has "
+    flag = False
+    if orig_val > to_compare:
+        flag = True
+        comparison += "increased "
+    elif orig_val < to_compare:
+        flag = True
+        comparison += "decreased "
+    if flag:
+        comparison += (f"in {comparison_type} for section {section}, " +
+                       f" {time}, from {orig_val} {comparison_type} to {to_compare} {comparison_type}")
+    else:
+        comparison = ""
+    return comparison
+
+
+def update_data():
+    global prev_data
+    prev_data = data_retriever.retrieve()
 
 
 def add_courses(args: tuple):
