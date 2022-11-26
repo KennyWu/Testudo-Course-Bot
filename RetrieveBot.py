@@ -14,6 +14,7 @@ bot = commands.Bot(allowed_mentions=discord.AllowedMentions(
 data_retriever = Retrieve(semester=SEMSESTER)
 courses = dict()
 prev_data = dict()
+channel_id = ""
 with open('config.json') as f:
     f = json.load(f)
 
@@ -28,28 +29,32 @@ List courses and sections to be retrieve - !list""")
 
 @bot.command(description='Adding multiple courses/sections')
 async def course(ctx, *arg):
+    global channel_id
     success = False
     async with ctx.typing():
         if len(arg) >= 2:
             success = True if add_courses(arg) else False
     if success:
-        retrieve_important.stop()
+        channel_id = ctx.channel.id
+        retrieve_important.cancel()
         await ctx.send("Courses added Sucessfully")
         update_data()
         retrieve_important.start()
     else:
-        await ctx.send("Courses weren't added for following possiible reasons:")
+        await ctx.send("Courses weren't added for following possible reasons:")
         await ctx.send("Course not existing, Section not existing")
 
 
 @bot.command()
 async def delete(ctx, *arg):
+    global channel_id
     success = False
     async with ctx.typing():
         if len(arg) >= 1:
             success = True if delete_courses(arg) else False
     if success:
-        retrieve_important.stop()
+        channel_id = ctx.channel.id
+        retrieve_important.cancel()
         await ctx.send('Courses/Sections deleted')
         update_data()
         retrieve_important.start()
@@ -89,11 +94,12 @@ async def list(ctx):
 
 
 # TODO compare and contrast between data points
-@tasks.loop(minutes=10)
+@tasks.loop(seconds=10)
 async def retrieve_important():
+    global channel_id
     data = dict()
     data = data_retriever.retrieve()
-    channel = bot.get_channel(931422185040531486)
+    channel = bot.get_channel(channel_id)
     changes = set()
     if len(data) != 0:
         for course in data:
