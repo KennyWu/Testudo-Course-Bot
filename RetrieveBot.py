@@ -1,7 +1,7 @@
 import discord
 from RetrieveData import Retrieve
 from discord.ext import tasks, commands
-import datetime
+import json
 
 discord.utils.setup_logging()
 
@@ -14,6 +14,8 @@ bot = commands.Bot(allowed_mentions=discord.AllowedMentions(
 data_retriever = Retrieve(semester=SEMSESTER)
 courses = dict()
 prev_data = dict()
+with open('config.json') as f:
+    f = json.load(f)
 
 
 @bot.command()
@@ -168,4 +170,4 @@ def delete_courses(arg):
         return data_retriever.delete(course=arg[0])
 
 
-bot.run('OTMxNDIyNzUxMzA5MzMyNTYw.GNOTJH.6vG18RHSbNRTrG-c8mZr29OuhYcsUnHSFQdoQs')
+bot.run(f["token"])
