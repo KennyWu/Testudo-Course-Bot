@@ -94,7 +94,7 @@ async def list(ctx):
 
 
 # TODO compare and contrast between data points
-@tasks.loop(seconds=10)
+@tasks.loop(minutes=10)
 async def retrieve_important():
     global channel_id
     data = dict()
