@@ -1,5 +1,5 @@
 import pytest
-from RetrieveData import Retrieve
+from Retrieval import Retrieve
 
 
 def test_one():
