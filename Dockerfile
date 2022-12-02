@@ -2,8 +2,9 @@ FROM python:3.8
 
 WORKDIR /app
 
-COPY Retrieval/ ./
+COPY requirments.txt ./
+RUN pip3 install -r requirments.txt
 
-RUN pip3 install -r requests beautifulsoup4 discord.py
+COPY /Retrieval ./
 
-CMD [ "Python3", "./Retrieval/RetrieveBot.py"]
+CMD [ "python3", "./Retrieval/RetrieveBot.py"]
