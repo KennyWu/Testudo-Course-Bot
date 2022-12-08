@@ -96,6 +96,7 @@ async def list(ctx):
 # TODO compare and contrast between data points
 @tasks.loop(minutes=10)
 async def retrieve_important():
+    global prev_data
     global channel_id
     data = dict()
     data = data_retriever.retrieve()
@@ -111,13 +112,14 @@ async def retrieve_important():
                 str_changes = compare(
                     course, section, openings, time, "openings")
                 str_changes += "\n" + \
-                    compare(course, section, openings, time, "openings")
+                    compare(course, section, waitlist, time, "waitlist")
                 if not str_changes:
                     changes.add(str_changes)
         if len(changes) != 0:
             await channel.send('@everyone\n')
             for change in changes:
                 await channel.send(change + "\n")
+            prev_data = data
         else:
             await channel.send("No changes found")
     else:
