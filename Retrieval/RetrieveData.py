@@ -122,7 +122,7 @@ class Retrieve:
         Retrieves all data on the courses and returns in dict format
 
         Returns:
-            dict: format (str: dict(tuple()))
+            dict: format (str: dict(str, tuple()))
         """
         self.__check_semster
         data = dict()
