@@ -14,8 +14,7 @@ bot = commands.Bot(allowed_mentions=discord.AllowedMentions(
 data_retriever = Retrieve(semester=SEMSESTER)
 courses = dict()
 # prev_data = dict()
-prev_data = {"CMSC132": {"0101":  ("MWF 2:00pm - 2:50pm", "10", "2"),
-                         "0102": (" MWF 2:00pm - 2:50pm ", "2", "0")}}
+prev_data = dict()
 channel_id = ""
 with open('config.json') as f:
     f = json.load(f)
@@ -40,7 +39,7 @@ async def course(ctx, *arg):
         channel_id = ctx.channel.id
         retrieve_important.cancel()
         await ctx.send("Courses added Sucessfully")
-        # update_data()
+        update_data()
         retrieve_important.start()
     else:
         await ctx.send("Courses weren't added for following possible reasons:")
@@ -96,7 +95,7 @@ async def list(ctx):
 
 
 # TODO compare and contrast between data points
-@tasks.loop(seconds=5)
+@tasks.loop(minutes=10)
 async def retrieve_important():
     global prev_data
     global channel_id
