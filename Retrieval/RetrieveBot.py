@@ -38,8 +38,8 @@ async def course(ctx, *arg):
     if success:
         channel_id = ctx.channel.id
         retrieve_important.cancel()
-        await ctx.send("Courses added Sucessfully")
         update_data()
+        await ctx.send("Courses added Sucessfully")
         retrieve_important.start()
     else:
         await ctx.send("Courses weren't added for following possible reasons:")
@@ -102,7 +102,7 @@ async def retrieve_important():
     data = dict()
     data = data_retriever.retrieve()
     channel = bot.get_channel(channel_id)
-    changes = set()
+    changes = []
     if len(data) != 0:
         for course in data:
             course_str = '**COURSE: ' + course + '**'
@@ -110,6 +110,8 @@ async def retrieve_important():
                 time = data[course][section][0]
                 openings = int(data[course][section][1])
                 waitlist = int(data[course][section][2])
+                print(openings)
+                print(waitlist)
                 str_changes = compare(
                     course, section, openings, time, "openings")
                 if str_changes:
@@ -117,7 +119,7 @@ async def retrieve_important():
                 str_changes += compare(course, section,
                                        waitlist, time, "waitlist")
                 if str_changes and str_changes != "\n":
-                    changes.add(str_changes)
+                    changes.append(str_changes)
         if len(changes) != 0:
             await channel.send('@everyone\n')
             for change in changes:
@@ -134,9 +136,9 @@ async def retrieve_important():
 def compare(course, section, to_compare, time, comparison_type):
     global prev_data
     orig_val = 0
-    if comparison_type == "waitlist":
+    if comparison_type == "openings":
         orig_val = int(prev_data[course][section][1])
-    else:
+    elif comparison_type == "waitlist":
         orig_val = int(prev_data[course][section][2])
     comparison = course + " has "
     flag = False
