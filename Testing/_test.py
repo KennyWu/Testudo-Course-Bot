@@ -59,7 +59,7 @@ def test_six():
     retrieve.course_selection = test_dict
     assert retrieve.add(course='CMSC216', section={'0000', '0101'}) == False
 
-
+#Tests a quick change
 def test_seven():
     """Tests that deleting works as on deleting whole courses"""
     test_dict = {'CMSC216': {110, 120, 130, 140},
